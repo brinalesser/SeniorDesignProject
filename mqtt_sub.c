@@ -27,7 +27,7 @@ int main() {
 	mosquitto_connect_callback_set(mosq, on_connect);
 	mosquitto_message_callback_set(mosq, on_message);
 	
-	rc = mosquitto_connect(mosq, "localhost", 15672, 10);
+	rc = mosquitto_connect(mosq, "localhost", 5672, 10);
 	if(rc) {
 		printf("Could not connect to Broker with return code %d\n", rc);
 		return -1;
