@@ -65,13 +65,17 @@ int main(int argc, char *argv[]){
         switch(opt) 
         { 
             case 'u': 
-                un = optarg;
+			sprintf(un, "%s", optarg);
+			break;
             case 'w': 
-                pw = optarg;
+                sprintf(pw, "%s", optarg);
+			break;
 			case 'u': 
 				port = atoi(optarg);
+			break;
 			case 'h': 
-				host = optarg;
+				sprintf(host, "%s", optarg);
+			break;
             case ':': 
                 printf("arg missing value\n"); 
                 break; 
