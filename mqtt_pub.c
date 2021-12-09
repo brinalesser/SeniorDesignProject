@@ -23,7 +23,7 @@ char data_to_send[4];
 gpioPulse_t pulse[2];
 
 void gpio_cb(int gpio, int level, uint32_t tick){
-   if(gpio == GPIO_PIN && level == 1 && mem_loc != NULL){ //rising edge of GPIO 21
+   if(gpio == GPIO_PIN && level == 1 && mem_loc_str != NULL){ //rising edge of GPIO 21
         /**
       //number of us since boot
       data_to_send[0] = (tick) & 0xFF;
@@ -52,7 +52,7 @@ void message_callback(struct mosquitto *mosq, void *obj, const struct mosquitto_
         bool match = 0;
         mosquitto_topic_matches_sub("Message", message->topic, &match);
         if (match) {
-		sprintf(mem_loc_str, message->payload)
+		sprintf(mem_loc_str, message->payload);
                 printf("setting mem loc to %s", mem_loc_str);
         }
 }
