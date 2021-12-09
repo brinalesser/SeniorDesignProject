@@ -1,0 +1,55 @@
+                 w _ITM_deregisterTMCloneTable
+                 w _ITM_registerTMCloneTable
+                 w __cxa_finalize@@GLIBC_2.2.5
+                 w __gmon_start__
+                 U __libc_start_main@@GLIBC_2.2.5
+                 U __stack_chk_fail@@GLIBC_2.4
+                 U atoi@@GLIBC_2.2.5
+                 U fgets@@GLIBC_2.2.5
+                 U getopt@@GLIBC_2.2.5
+                 U mosquitto_connect@@MOSQ_1.0
+                 U mosquitto_destroy@@MOSQ_1.0
+                 U mosquitto_disconnect@@MOSQ_1.0
+                 U mosquitto_lib_cleanup@@MOSQ_1.0
+                 U mosquitto_lib_init@@MOSQ_1.0
+                 U mosquitto_new@@MOSQ_1.0
+                 U mosquitto_publish@@MOSQ_1.0
+                 U printf@@GLIBC_2.2.5
+                 U puts@@GLIBC_2.2.5
+                 U sprintf@@GLIBC_2.2.5
+                 U strtol@@GLIBC_2.2.5
+0000000000001000 t _init
+0000000000001220 000000000000002f T _start
+0000000000001250 t deregister_tm_clones
+0000000000001280 t register_tm_clones
+00000000000012c0 t __do_global_dtors_aux
+0000000000001300 t frame_dummy
+0000000000001309 0000000000000032 T get_mem_at_location
+000000000000133b 00000000000002f7 T main
+0000000000001640 0000000000000065 T __libc_csu_init
+00000000000016b0 0000000000000005 T __libc_csu_fini
+00000000000016b8 T _fini
+0000000000002000 0000000000000004 R _IO_stdin_used
+00000000000020e8 r __GNU_EH_FRAME_HDR
+000000000000225c r __FRAME_END__
+0000000000003d38 d __frame_dummy_init_array_entry
+0000000000003d38 d __init_array_start
+0000000000003d40 d __do_global_dtors_aux_fini_array_entry
+0000000000003d40 d __init_array_end
+0000000000003d48 d _DYNAMIC
+0000000000003f48 d _GLOBAL_OFFSET_TABLE_
+0000000000004000 D __data_start
+0000000000004000 W data_start
+0000000000004008 D __dso_handle
+0000000000004010 0000000000000004 D gui_var1
+0000000000004014 0000000000000004 D gui_var2
+0000000000004018 0000000000000004 D gui_var3
+000000000000401c B __bss_start
+000000000000401c D _edata
+0000000000004020 D __TMC_END__
+0000000000004020 0000000000000004 B optopt@@GLIBC_2.2.5
+0000000000004024 0000000000000004 B optind@@GLIBC_2.2.5
+0000000000004030 0000000000000008 B stdin@@GLIBC_2.2.5
+0000000000004038 0000000000000008 B optarg@@GLIBC_2.2.5
+0000000000004040 0000000000000001 b completed.8060
+0000000000004048 B _end
