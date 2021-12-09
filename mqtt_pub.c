@@ -32,11 +32,12 @@ void gpio_cb(int gpio, int level, uint32_t tick){
       data_to_send[2] = (tick >> 16) & 0xFF;
       data_to_send[3] = (tick >> 24) & 0xFF;
         **/
+
         snprintf(data_to_send, 50, "%f", *mem_loc);
-        mosquitto_publish(mosq, NULL, "Message", sizeof data_to_send, data_to_send, 0, false);
+        mosquitto_publish(mosq, NULL, "GUI_VAR", sizeof data_to_send, data_to_send, 0, false);
 
         //update value for testing purposes
-	 *mem_loc = (*mem_loc) + sin(tick);
+         *mem_loc = (*mem_loc) + sin(tick);
    }
 }
 
@@ -48,71 +49,70 @@ void cleanup(){
 
 void message_callback(struct mosquitto *mosq, void *obj, const struct mosquitto_message *message)
 {
-	printf("got message '%.*s' for topic '%s'\n", message->payloadlen, (char*) message->payload, message->topic);
-	bool match = 0;
-	mosquitto_topic_matches_sub("Message", message->topic, &match);
-	if (match) {
-		mem_loc = (double *)strtol(message->payload, NULL, message->payloadlen);
-		printf("setting mem loc to %d", mem_loc);
-	}
+        printf("got message '%.*s' for topic '%s'\n", message->payloadlen, (char*) message->payload, message->topic);
+        bool match = 0;
+        mosquitto_topic_matches_sub("Message", message->topic, &match);
+        if (match) {
+                mem_loc = (double *)strtol(message->payload, NULL, message->payloadlen);
+                printf("setting mem loc to %d", mem_loc);
+        }
 }
 
 int main(int argc, char *argv[]){
-	int rc, opt;
-	char un[20] = DEFAULT_UN;
-	char pw[20] = DEFAULT_PW;
-	char host[50] = DEFAULT_HOST;
-	int port = DEFAULT_PORT;
+        int rc, opt;
+        char un[20] = DEFAULT_UN;
+        char pw[20] = DEFAULT_PW;
+        char host[50] = DEFAULT_HOST;
+        int port = DEFAULT_PORT;
 
-	while((opt = getopt(argc, argv, ":u:w:p:h:")) != -1) 
-    { 
-        switch(opt) 
-        { 
-		case 'u': 
-			sprintf(un, "%s", optarg);
-			break;
-		case 'w':
-			sprintf(pw, "%s", optarg);
-			break;
-		case 'p': 
-			port = atoi(optarg);
-			break;
-		case 'h': 
-			sprintf(host, "%s", optarg);
-			break;
-            case ':': 
-                printf("arg missing value\n"); 
-                break; 
-            case '?': 
+        while((opt = getopt(argc, argv, ":u:w:p:h:")) != -1)
+    {
+        switch(opt)
+        {
+                case 'u':
+                        sprintf(un, "%s", optarg);
+                        break;
+                case 'w':
+                        sprintf(pw, "%s", optarg);
+                        break;
+                case 'p':
+                        port = atoi(optarg);
+                        break;
+                case 'h':
+                        sprintf(host, "%s", optarg);
+                        break;
+            case ':':
+                printf("arg missing value\n");
+                break;
+            case '?':
                 printf("unknown rg: %c\n", optopt);
-                break; 
-        } 
-    } 
-
-    for(; optind < argc; optind++){     
-        printf("too many args: %s\n", argv[optind]); 
+                break;
+        }
     }
 
-	mosquitto_lib_init();
-	
-	int mid = 42;
-	mosquitto_message_callback_set(mosq, message_callback);
-	mosquitto_subscribe(mosq, &mid, "Message", 1);
+    for(; optind < argc; optind++){
+        printf("too many args: %s\n", argv[optind]);
+    }
 
-	mosq = mosquitto_new("publisher-test", true, NULL);
-	mosquitto_username_pw_set(mosq, un, pw);
-	rc = mosquitto_connect(mosq, host, port, 60);
-	
-	if(rc != 0){
-		printf("Client could not connect to broker! Error Code: %d\n", rc);
-		mosquitto_destroy(mosq);
-		return -1;
-	}
-	printf("Connected to broker\n");
-	
-	//square wave for periodic read
-	int secs = 60;
-	int us = 50;
+        mosquitto_lib_init();
+
+        int mid = 42;
+        mosq = mosquitto_new("publisher-test", true, NULL);
+	mosquitto_message_callback_set(mosq, message_callback);
+        mosquitto_subscribe(mosq, &mid, "Message", 1);
+        mosquitto_username_pw_set(mosq, un, pw);
+        rc = mosquitto_connect(mosq, host, port, 60);
+
+        if(rc != 0){
+                printf("Client could not connect to broker! Error Code: %d\n", rc);
+                mosquitto_destroy(mosq);
+                return -1;
+        }
+        printf("Connected to broker\n");
+
+        //square wave for periodic read
+        int secs = 60;
+        int us = 50;
    if (us<2) us = 2; /* minimum of 2 micros per pulse */
    if ((secs<1) || (secs>3600)) secs = 3600;
    if (gpioInitialise()<0) return 1;
@@ -137,7 +137,7 @@ int main(int argc, char *argv[]){
    sleep(secs);
    gpioWaveTxStop();
    gpioTerminate();
-	
-	atexit(cleanup);
-	return 0;
+
+        atexit(cleanup);
+        return 0;
 }
