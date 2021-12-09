@@ -20,7 +20,7 @@ namespace MQTTTest
         MqttClient mqttClient;
 
         //plotting
-        private List<string> variables = new List<string>();
+        private List<Tuple<string, string>> variables = new List<Tuple<string, string>>();
         private List<float> plot_data = new List<float>();
         private string plot_var;
         const int maxData = 100;
@@ -35,29 +35,29 @@ namespace MQTTTest
                 if (words.Length == 4)
                 {
                     string var_name = words[3].Trim();
+                    string var_loc = words[0].Trim();
                     if (var_name.StartsWith("gui"))
                     {
-                        this.variables.Add(var_name);
+                        this.variables.Add(Tuple.Create(var_name, var_loc));
                     }
                 }
             }
 
             //for testing purposes
-            this.variables.Add("Value");
-            this.variables.Add("Vab");
-            this.variables.Add("Vbc");
-            this.variables.Add("Vca");
-            this.variables.Add("Vab_RMS");
-            this.variables.Add("Vbc_RMS");
-            this.variables.Add("Vca_RMS");
-
+            this.variables.Add(Tuple.Create("Value", "0"));
+            this.variables.Add(Tuple.Create("Vab", "0"));
+            this.variables.Add(Tuple.Create("Vbc", "0"));
+            this.variables.Add(Tuple.Create("Vca", "0"));
+            this.variables.Add(Tuple.Create("Vab_RMS", "0"));
+            this.variables.Add(Tuple.Create("Vbc_RMS", "0"));
+            this.variables.Add(Tuple.Create("Vca_RMS", "0"));
 
             InitializeComponent();
 
             //Put memory variables in drop-down menu
             comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;
-            comboBox1.MaxDropDownItems = variables.Count(); ;
-            comboBox1.Items.AddRange(this.variables.ToArray());
+            comboBox1.MaxDropDownItems = variables.Count();
+            comboBox1.Items.AddRange(variables.Select(x => x.Item1).ToList().ToArray());
         }
 
         private void button1_Click(object sender, EventArgs e)

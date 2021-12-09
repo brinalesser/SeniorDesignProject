@@ -40,3 +40,17 @@ C:\Users\Sabrina\Documents\School\ECE4805\MQTTTest\MQTTTest\obj\Debug\MQTTTest.c
 C:\Users\Sabrina\Documents\School\ECE4805\MQTTTest\MQTTTest\obj\Debug\MQTTTest.csproj.CopyComplete
 C:\Users\Sabrina\Documents\School\ECE4805\MQTTTest\MQTTTest\obj\Debug\MQTTTest.exe
 C:\Users\Sabrina\Documents\School\ECE4805\MQTTTest\MQTTTest\obj\Debug\MQTTTest.pdb
+C:\Users\Sabrina\Documents\School\ECE4805\SeniorDesignProject\MQTTTest\MQTTTest\bin\Debug\MQTTTest.exe.config
+C:\Users\Sabrina\Documents\School\ECE4805\SeniorDesignProject\MQTTTest\MQTTTest\bin\Debug\MQTTTest.exe
+C:\Users\Sabrina\Documents\School\ECE4805\SeniorDesignProject\MQTTTest\MQTTTest\bin\Debug\MQTTTest.pdb
+C:\Users\Sabrina\Documents\School\ECE4805\SeniorDesignProject\MQTTTest\MQTTTest\bin\Debug\M2Mqtt.Net.dll
+C:\Users\Sabrina\Documents\School\ECE4805\SeniorDesignProject\MQTTTest\MQTTTest\bin\Debug\MQTTnet.dll
+C:\Users\Sabrina\Documents\School\ECE4805\SeniorDesignProject\MQTTTest\MQTTTest\bin\Debug\M2Mqtt.Net.pdb
+C:\Users\Sabrina\Documents\School\ECE4805\SeniorDesignProject\MQTTTest\MQTTTest\obj\Debug\MQTTTest.csproj.AssemblyReference.cache
+C:\Users\Sabrina\Documents\School\ECE4805\SeniorDesignProject\MQTTTest\MQTTTest\obj\Debug\MQTTTest.Form1.resources
+C:\Users\Sabrina\Documents\School\ECE4805\SeniorDesignProject\MQTTTest\MQTTTest\obj\Debug\MQTTTest.Properties.Resources.resources
+C:\Users\Sabrina\Documents\School\ECE4805\SeniorDesignProject\MQTTTest\MQTTTest\obj\Debug\MQTTTest.csproj.GenerateResource.cache
+C:\Users\Sabrina\Documents\School\ECE4805\SeniorDesignProject\MQTTTest\MQTTTest\obj\Debug\MQTTTest.csproj.CoreCompileInputs.cache
+C:\Users\Sabrina\Documents\School\ECE4805\SeniorDesignProject\MQTTTest\MQTTTest\obj\Debug\MQTTTest.csproj.CopyComplete
+C:\Users\Sabrina\Documents\School\ECE4805\SeniorDesignProject\MQTTTest\MQTTTest\obj\Debug\MQTTTest.exe
+C:\Users\Sabrina\Documents\School\ECE4805\SeniorDesignProject\MQTTTest\MQTTTest\obj\Debug\MQTTTest.pdb
