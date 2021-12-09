@@ -23,8 +23,6 @@ char data_to_send[4];
 
 gpioPulse_t pulse[2];
 
-int good_to_go = 0;
-
 void gpio_cb(int gpio, int level, uint32_t tick){
    if(gpio == GPIO_PIN && level == 1 && mem_loc != NULL){ //rising edge of GPIO 21
         /**
@@ -58,7 +56,6 @@ void message_callback(struct mosquitto *mosq, void *obj, const struct mosquitto_
                 mem_loc = (double *)strtol(message->payload, NULL, message->payloadlen);
                 printf("setting mem loc to %d", mem_loc);
         }
-	mosquitto_loop_stop(mosq, true);
 }
 
 void on_connect(struct mosquitto *mosq, void *obj, int rc) {
