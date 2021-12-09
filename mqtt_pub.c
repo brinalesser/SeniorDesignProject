@@ -20,6 +20,8 @@ int gui_value3 = 3;
 char mem_loc_str[20];
 char data_to_send[4];
 
+gpioPulse_t pulse[2];
+
 int get_mem_at_location(char * loc){
         int * p = (int *)strtol(loc, NULL, 16);
         int val =  *p;
@@ -64,17 +66,17 @@ int main(int argc, char *argv[]){
     { 
         switch(opt) 
         { 
-            case 'u': 
+		case 'u': 
 			sprintf(un, "%s", optarg);
 			break;
-            case 'w': 
-                sprintf(pw, "%s", optarg);
+		case 'w':
+			sprintf(pw, "%s", optarg);
 			break;
-			case 'u': 
-				port = atoi(optarg);
+		case 'p': 
+			port = atoi(optarg);
 			break;
-			case 'h': 
-				sprintf(host, "%s", optarg);
+		case 'h': 
+			sprintf(host, "%s", optarg);
 			break;
             case ':': 
                 printf("arg missing value\n"); 
