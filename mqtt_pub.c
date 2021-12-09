@@ -17,7 +17,6 @@ int gui_value1 = 1;
 int gui_value2 = 2;
 int gui_value3 = 3;
 
-double * mem_loc;
 char mem_loc_str[20];
 char data_to_send[4];
 
@@ -32,7 +31,7 @@ void gpio_cb(int gpio, int level, uint32_t tick){
       data_to_send[2] = (tick >> 16) & 0xFF;
       data_to_send[3] = (tick >> 24) & 0xFF;
         **/
-
+	double * p = (double *)strtol(mem_loc_str, NULL, 16);
         snprintf(data_to_send, 50, "%f", *mem_loc);
         mosquitto_publish(mosq, NULL, "GUI_VAR", sizeof data_to_send, data_to_send, 0, false);
 
@@ -53,8 +52,8 @@ void message_callback(struct mosquitto *mosq, void *obj, const struct mosquitto_
         bool match = 0;
         mosquitto_topic_matches_sub("Message", message->topic, &match);
         if (match) {
-                mem_loc = (double *)strtol(message->payload, NULL, message->payloadlen);
-                printf("setting mem loc to %d", mem_loc);
+		sprintf(mem_loc_str, message->payload)
+                printf("setting mem loc to %s", mem_loc_str);
         }
 }
 
