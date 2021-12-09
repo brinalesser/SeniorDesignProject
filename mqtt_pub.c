@@ -1,11 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <mosquitto.h>
+#include <unistd.h>
 
+#include <mosquitto.h>
+#include <pigpio.h>
+
+#define DEFAULT_HOST "wblvd.duckdns.org"
+#define DEFAULT_PORT 1883
+#define DEFAULT_UN "newadmin"
+#define DEFAULT_PW "12345"
+
+struct mosquitto * mosq;
 int gui_value1 = 1;
 int gui_value2 = 2;
 int gui_value3 = 3;
+
+char mem_loc_str[20];
+char data_to_send[4];
 
 int get_mem_at_location(char * loc){
         int * p = (int *)strtol(loc, NULL, 16);
@@ -13,36 +25,109 @@ int get_mem_at_location(char * loc){
         return val;
 }
 
+void gpio_cb(int gpio, int level, uint32_t tick){
+   if(gpio == GPIO_PIN && level == 1){ //rising edge of GPIO 21
+   
+      //number of us since boot
+      data_to_send[0] = (tick) & 0xFF;
+      data_to_send[1] = (tick >> 8) & 0xFF;
+      data_to_send[2] = (tick >> 16) & 0xFF;
+      data_to_send[3] = (tick >> 24) & 0xFF;
+	  
+	  /**
+	  int int_to_send = get_mem_at_location(mem_loc_str);
+	  data_to_send[0] = (int_to_send) & 0xFF;
+      data_to_send[1] = (int_to_send >> 8) & 0xFF;
+      data_to_send[2] = (int_to_send >> 16) & 0xFF;
+      data_to_send[3] = (int_to_send >> 24) & 0xFF;
+	  **/
+
+	  mosquitto_publish(mosq, NULL, "Message", sizeof data_to_send, data_to_send, 0, false);
+   }
+}
+
+void cleanup(){
+	mosquitto_disconnect(mosq);
+	mosquitto_destroy(mosq);
+	mosquitto_lib_cleanup();
+}
+
 int main(){
-	int rc;
-	struct mosquitto * mosq;
+	int rc, opt;
+	char un[20] = DEFAULT_UN;
+	char pw[20] = DEFAULT_PW;
+	char host[50] = DEFAULT_HOST;
+	int port = DEFAULT_PORT;
+
+	while((opt = getopt(argc, argv, ":u:w:p:h:")) != -1) 
+    { 
+        switch(opt) 
+        { 
+            case 'u': 
+                un = optarg;
+            case 'w': 
+                pw = optarg;
+			case 'u': 
+				port = atoi(optarg);
+			case 'h': 
+				host = optarg;
+            case ':': 
+                printf("arg missing value\n"); 
+                break; 
+            case '?': 
+                printf("unknown rg: %c\n", optopt);
+                break; 
+        } 
+    } 
+
+    for(; optind < argc; optind++){     
+        printf("too many args: %s\n", argv[optind]); 
+    }
 
 	mosquitto_lib_init();
 
 	mosq = mosquitto_new("publisher-test", true, NULL);
-	mosquitto_username_pw_set(mosq, "newadmin", "12345");
-	rc = mosquitto_connect(mosq, "wblvd.duckdns.org", 1883, 60);
+	mosquitto_username_pw_set(mosq, un, pw);
+	rc = mosquitto_connect(mosq, host, port, 60);
 	
 	if(rc != 0){
 		printf("Client could not connect to broker! Error Code: %d\n", rc);
 		mosquitto_destroy(mosq);
 		return -1;
 	}
-	printf("Connected to broker!\n");
-
-	char mem_loc_str[100];
+	printf("Connected to broker\n");
+	
 	printf("Enter a memory location: ");
 	fgets(mem_loc_str, sizeof mem_loc_str, stdin);
+	
+	//square wave for periodic read
+	int secs = 60;
+	int us = 50;
+   if (us<2) us = 2; /* minimum of 2 micros per pulse */
+   if ((secs<1) || (secs>3600)) secs = 3600;
+   if (gpioInitialise()<0) return 1;
 
-	int val_to_send = get_mem_at_location(mem_loc_str);
+   gpioSetMode(GPIO_PIN, PI_OUTPUT);
 
-	char char_val[6];
-	sprintf(char_val, "%d", val_to_send);
-	mosquitto_publish(mosq, NULL, "Message", 6, char_val, 0, false);
+   pulse[0].gpioOn = (1<<GPIO_PIN); /* GPIO 21 high */
+   pulse[0].gpioOff = 0;
+   pulse[0].usDelay = us;
 
-	mosquitto_disconnect(mosq);
-	mosquitto_destroy(mosq);
+   pulse[1].gpioOn = 0;
+   pulse[1].gpioOff = (1<<GPIO_PIN); /* GPIO 21 low */
+      pulse[1].usDelay = us;
 
-	mosquitto_lib_cleanup();
+   gpioSetAlertFunc(GPIO_PIN, alert_cb);
+   gpioWaveClear();
+   gpioWaveAddGeneric(2, pulse);
+
+   int id = gpioWaveCreate();
+   gpioWaveTxSend(id, PI_WAVE_MODE_REPEAT);
+
+   sleep(secs);
+   gpioWaveTxStop();
+   gpioTerminate();
+	
+	atexit(cleanup);
 	return 0;
 }
