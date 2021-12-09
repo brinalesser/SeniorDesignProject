@@ -31,12 +31,14 @@ void gpio_cb(int gpio, int level, uint32_t tick){
       data_to_send[2] = (tick >> 16) & 0xFF;
       data_to_send[3] = (tick >> 24) & 0xFF;
         **/
-	double * p = (double *)strtol(mem_loc_str, NULL, 16);
+        double * p = (double *)strtol(mem_loc_str, NULL, 16);
+        if(p != 0){
         snprintf(data_to_send, 50, "%f", *p);
         mosquitto_publish(mosq, NULL, "GUI_VAR", sizeof data_to_send, data_to_send, 0, false);
 
         //update value for testing purposes
-         *mem_loc = (*mem_loc) + sin(tick);
+         *p = (*p) + sin(tick);
+        }
    }
 }
 
@@ -48,22 +50,21 @@ void cleanup(){
 
 void message_callback(struct mosquitto *mosq, void *obj, const struct mosquitto_message *message)
 {
-        printf("got message '%.*s' for topic '%s'\n", message->payloadlen, (char*) message->payload, message->topic);
         bool match = 0;
         mosquitto_topic_matches_sub("Message", message->topic, &match);
         if (match) {
-		sprintf(mem_loc_str, message->payload);
-                printf("setting mem loc to %s", mem_loc_str);
+                sprintf(mem_loc_str, message->payload);
+                printf("setting mem loc to %s\n", mem_loc_str);
         }
 }
 
 void on_connect(struct mosquitto *mosq, void *obj, int rc) {
-	printf("ID: %d\n", * (int *) obj);
-	if(rc) {
-		printf("Error with result code: %d\n", rc);
-		exit(-1);
-	}
-	mosquitto_subscribe(mosq, NULL, "Message", 0);
+        printf("ID: %d\n", * (int *) obj);
+        if(rc) {
+                printf("Error with result code: %d\n", rc);
+                exit(-1);
+        }
+        mosquitto_subscribe(mosq, NULL, "Message", 0);
 }
 
 int main(int argc, char *argv[]){
@@ -105,10 +106,10 @@ int main(int argc, char *argv[]){
         mosquitto_lib_init();
 
         mosq = mosquitto_new("test", true, NULL);
-	
-	mosquitto_connect_callback_set(mosq, on_connect);
-	mosquitto_message_callback_set(mosq, message_callback);
-	
+
+        mosquitto_connect_callback_set(mosq, on_connect);
+        mosquitto_message_callback_set(mosq, message_callback);
+
         mosquitto_username_pw_set(mosq, un, pw);
         rc = mosquitto_connect(mosq, host, port, 60);
 
