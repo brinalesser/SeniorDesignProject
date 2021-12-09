@@ -58,6 +58,15 @@ void message_callback(struct mosquitto *mosq, void *obj, const struct mosquitto_
         }
 }
 
+void on_connect(struct mosquitto *mosq, void *obj, int rc) {
+	printf("ID: %d\n", * (int *) obj);
+	if(rc) {
+		printf("Error with result code: %d\n", rc);
+		exit(-1);
+	}
+	mosquitto_subscribe(mosq, NULL, "Message", 0);
+}
+
 int main(int argc, char *argv[]){
         int rc, opt;
         char un[20] = DEFAULT_UN;
@@ -96,10 +105,9 @@ int main(int argc, char *argv[]){
 
         mosquitto_lib_init();
 
-        int mid = 42;
         mosq = mosquitto_new("publisher-test", true, NULL);
+	mosquitto_connect_callback_set(mosq, on_connect);
 	mosquitto_message_callback_set(mosq, message_callback);
-        mosquitto_subscribe(mosq, &mid, "Message", 1);
         mosquitto_username_pw_set(mosq, un, pw);
         rc = mosquitto_connect(mosq, host, port, 60);
 
