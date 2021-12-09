@@ -36,9 +36,7 @@ void gpio_cb(int gpio, int level, uint32_t tick){
         mosquitto_publish(mosq, NULL, "Message", sizeof data_to_send, data_to_send, 0, false);
 
         //update value for testing purposes
-	 if(mem_loc == &gui_value1 || mem_loc == &gui_value2 || mem_loc == &gui_value3){
-		 *mem_loc = (*mem_loc) + sin(tick);
-	 }
+	 *mem_loc = (*mem_loc) + sin(tick);
    }
 }
 
@@ -97,9 +95,9 @@ int main(int argc, char *argv[]){
 
 	mosquitto_lib_init();
 	
-	int id = 42;
+	int mid = 42;
 	mosquitto_message_callback_set(mosq, message_callback);
-	mosquitto_subscribe(mosq, id, "Message", 1);
+	mosquitto_subscribe(mosq, &mid, "Message", 1);
 
 	mosq = mosquitto_new("publisher-test", true, NULL);
 	mosquitto_username_pw_set(mosq, un, pw);
