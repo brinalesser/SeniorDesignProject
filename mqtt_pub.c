@@ -10,6 +10,7 @@
 #define DEFAULT_PORT 1883
 #define DEFAULT_UN "newadmin"
 #define DEFAULT_PW "12345"
+#define GPIO_PIN 21
 
 struct mosquitto * mosq;
 int gui_value1 = 1;
@@ -52,7 +53,7 @@ void cleanup(){
 	mosquitto_lib_cleanup();
 }
 
-int main(){
+int main(int argc, char *argv[]){
 	int rc, opt;
 	char un[20] = DEFAULT_UN;
 	char pw[20] = DEFAULT_PW;
@@ -117,7 +118,7 @@ int main(){
    pulse[1].gpioOff = (1<<GPIO_PIN); /* GPIO 21 low */
       pulse[1].usDelay = us;
 
-   gpioSetAlertFunc(GPIO_PIN, alert_cb);
+   gpioSetAlertFunc(GPIO_PIN, gpio_cb);
    gpioWaveClear();
    gpioWaveAddGeneric(2, pulse);
 
