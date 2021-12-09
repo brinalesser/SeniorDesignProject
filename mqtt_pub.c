@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
+#include <math.h>
 #include <mosquitto.h>
 #include <pigpio.h>
 
@@ -17,42 +17,46 @@ int gui_value1 = 1;
 int gui_value2 = 2;
 int gui_value3 = 3;
 
+double * mem_loc;
 char mem_loc_str[20];
 char data_to_send[4];
 
 gpioPulse_t pulse[2];
 
-int get_mem_at_location(char * loc){
-        int * p = (int *)strtol(loc, NULL, 16);
-        int val =  *p;
-        return val;
-}
-
 void gpio_cb(int gpio, int level, uint32_t tick){
-   if(gpio == GPIO_PIN && level == 1){ //rising edge of GPIO 21
-   
+   if(gpio == GPIO_PIN && level == 1 && mem_loc != NULL){ //rising edge of GPIO 21
+        /**
       //number of us since boot
       data_to_send[0] = (tick) & 0xFF;
       data_to_send[1] = (tick >> 8) & 0xFF;
       data_to_send[2] = (tick >> 16) & 0xFF;
       data_to_send[3] = (tick >> 24) & 0xFF;
-	  
-	  /**
-	  int int_to_send = get_mem_at_location(mem_loc_str);
-	  data_to_send[0] = (int_to_send) & 0xFF;
-      data_to_send[1] = (int_to_send >> 8) & 0xFF;
-      data_to_send[2] = (int_to_send >> 16) & 0xFF;
-      data_to_send[3] = (int_to_send >> 24) & 0xFF;
-	  **/
+        **/
+        snprintf(data_to_send, 50, "%f", *mem_loc);
+        mosquitto_publish(mosq, NULL, "Message", sizeof data_to_send, data_to_send, 0, false);
 
-	  mosquitto_publish(mosq, NULL, "Message", sizeof data_to_send, data_to_send, 0, false);
+        //update value for testing purposes
+	 if(mem_loc == &gui_value1 || mem_loc == &gui_value2 || mem_loc == &gui_value3){
+		 *mem_loc = (*mem_loc) + sin(tick);
+	 }
    }
 }
 
 void cleanup(){
-	mosquitto_disconnect(mosq);
-	mosquitto_destroy(mosq);
-	mosquitto_lib_cleanup();
+        mosquitto_disconnect(mosq);
+        mosquitto_destroy(mosq);
+        mosquitto_lib_cleanup();
+}
+
+void message_callback(struct mosquitto *mosq, void *obj, const struct mosquitto_message *message)
+{
+	printf("got message '%.*s' for topic '%s'\n", message->payloadlen, (char*) message->payload, message->topic);
+	bool match = 0;
+	mosquitto_topic_matches_sub("Message", message->topic, &match);
+	if (match) {
+		mem_loc = (double *)strtol(message->payload, NULL, message->payloadlen);
+		printf("setting mem loc to %d", mem_loc);
+	}
 }
 
 int main(int argc, char *argv[]){
@@ -92,6 +96,10 @@ int main(int argc, char *argv[]){
     }
 
 	mosquitto_lib_init();
+	
+	int id = 42;
+	mosquitto_message_callback_set(mosq, message_callback);
+	mosquitto_subscribe(mosq, id, "Message", 1);
 
 	mosq = mosquitto_new("publisher-test", true, NULL);
 	mosquitto_username_pw_set(mosq, un, pw);
@@ -103,9 +111,6 @@ int main(int argc, char *argv[]){
 		return -1;
 	}
 	printf("Connected to broker\n");
-	
-	printf("Enter a memory location: ");
-	fgets(mem_loc_str, sizeof mem_loc_str, stdin);
 	
 	//square wave for periodic read
 	int secs = 60;
