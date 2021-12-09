@@ -23,6 +23,8 @@ char data_to_send[4];
 
 gpioPulse_t pulse[2];
 
+int good_to_go = 0;
+
 void gpio_cb(int gpio, int level, uint32_t tick){
    if(gpio == GPIO_PIN && level == 1 && mem_loc != NULL){ //rising edge of GPIO 21
         /**
@@ -56,6 +58,7 @@ void message_callback(struct mosquitto *mosq, void *obj, const struct mosquitto_
                 mem_loc = (double *)strtol(message->payload, NULL, message->payloadlen);
                 printf("setting mem loc to %d", mem_loc);
         }
+	mosquitto_loop_stop(mosq, true);
 }
 
 void on_connect(struct mosquitto *mosq, void *obj, int rc) {
@@ -105,9 +108,11 @@ int main(int argc, char *argv[]){
 
         mosquitto_lib_init();
 
-        mosq = mosquitto_new("publisher-test", true, NULL);
+        mosq = mosquitto_new("test", true, NULL);
+	
 	mosquitto_connect_callback_set(mosq, on_connect);
 	mosquitto_message_callback_set(mosq, message_callback);
+	
         mosquitto_username_pw_set(mosq, un, pw);
         rc = mosquitto_connect(mosq, host, port, 60);
 
@@ -116,7 +121,7 @@ int main(int argc, char *argv[]){
                 mosquitto_destroy(mosq);
                 return -1;
         }
-        printf("Connected to broker\n");
+        mosquitto_loop_start(mosq);
 
         //square wave for periodic read
         int secs = 60;
