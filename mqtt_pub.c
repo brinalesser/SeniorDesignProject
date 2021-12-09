@@ -32,7 +32,7 @@ void gpio_cb(int gpio, int level, uint32_t tick){
       data_to_send[3] = (tick >> 24) & 0xFF;
         **/
 	double * p = (double *)strtol(mem_loc_str, NULL, 16);
-        snprintf(data_to_send, 50, "%f", *mem_loc);
+        snprintf(data_to_send, 50, "%f", *p);
         mosquitto_publish(mosq, NULL, "GUI_VAR", sizeof data_to_send, data_to_send, 0, false);
 
         //update value for testing purposes
