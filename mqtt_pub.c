@@ -33,11 +33,11 @@ void gpio_cb(int gpio, int level, uint32_t tick){
         **/
         double * p = (double *)strtol(mem_loc_str, NULL, 16);
         if(p != 0){
-        snprintf(data_to_send, 50, "%f", *p);
-        mosquitto_publish(mosq, NULL, "GUI_VAR", sizeof data_to_send, data_to_send, 0, false);
+            snprintf(data_to_send, 50, "%f", *p);
+            mosquitto_publish(mosq, NULL, "GUI_VAR", sizeof data_to_send, data_to_send, 0, false);
 
-        //update value for testing purposes
-         *p = (*p) + sin(tick);
+            //update value for testing purposes
+            *p = (*p) + sin(tick);
         }
    }
 }
